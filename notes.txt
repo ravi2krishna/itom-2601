@@ -1,0 +1,119 @@
+class - 1
+=========
+
+    -> ITOM 
+
+        -> IT Operations Management is suite of applications within service now 
+        this applications helps organizations discover, map, monitor and manage 
+        their companies IT Infrastructure and Services.
+
+            -> IT Infrastructure
+
+                -> Hardware Management, Network Management, Server Management etc
+
+            -> IT Services 
+
+                -> Banking Applications 
+                -> Ecommerce Applications 
+                -> LMS Applications 
+                -> Email Services 
+
+            -> NOTE: To Power IT Services we need IT Infrastructure
+
+        -> Banking Service Like HDFC
+
+            -> https://www.hdfc.bank.in/
+
+                -> Net Banking
+
+                -> Credit Card Portal 
+
+                    -> Name, Card Number, CVV, Expiry Data (Data)
+
+                        -> Data is inside Database 
+
+                            -> Database is inside Server  
+
+                                -> Server is inside Datacenter (Cloud/On premise)  
+
+                -> Loan Portals 
+
+                -> Fast tag Portal 
+
+    -> ITOM bridges the gap between IT Infrastructure and Business Services 
+    by providing Visibility, Automation and Control over entire IT environment.
+
+
+    -> NOTE: HTTP (HyperText Transfer Protocol) and HTTPS (Secure) are protocols 
+    for "transmitting web data". HTTP sends data in plain text, making it insecure, 
+    while HTTPS uses SSL/TLS encryption to protect data integrity and user privacy.
+    HTTP port is 80 & HTTPS port is 443
+
+
+    -> NOTE: SSH The Secure Shell (SSH) protocol is a cryptographic network protocol used 
+    for secure, encrypted communication between a client and a server over an 
+    insecure network. It enables "remote login" using SSH Key Pairs (Public & Private Keys)
+    Above is mandatory for Linux Servers 
+    SSH port is 22
+
+
+    -> NOTE: Simple Network Management Protocol (SNMP) is an 
+    application-layer standard protocol for "monitoring" and managing 
+    network-connected devices (routers, switches, servers,firewalls, IoT) in IP networks. 
+    It operates over UDP (ports 161/162) to track network performance, 
+    detect faults, and configure remote devices.
+
+
+    -> Main Concepts Of ITOM 
+
+        -> Discovery (Horizontal Discovery)
+
+        -> Service Mapping 
+
+    -> NOTE: Agent Setup Ready(Mid Server) -> Begin Discovery -> Do Service Mapping 
+
+    -> https://www.servicenow.com/docs/r/it-operations-management/discovery/r-discovery.html
+
+
+    -> Modules / Key Concepts Of ITOM
+
+        -> CMDB (Configuration Management Database)
+
+            -> The "backbone" of ITOM. 
+            All discovered assets and their relationships are 
+            stored here as Configuration Items (CIs).
+
+        -> Configuration Items (CI)
+
+            -> Any component that needs to be managed — servers, databases, 
+            applications, network devices, etc.
+        
+        -> Discovery 
+
+            -> The process of automatically "identifying" and "populating" CIs 
+            into the CMDB. Uses MID Server to communicate with the network.
+
+        -> MID Server (Management, Instrumentation & Discovery)
+
+            -> A Java-based application(Agent) installed on a Windows/Linux machine 
+            within your network(cloud/on-premise). 
+            Acts as a bridge between ServiceNow and the target infrastructure.
+
+        -> Service Mapping 
+
+            -> Creates a Map linking a business service (e.g., "Email Service") 
+            to all its dependent infrastructure components.
+
+        -> Event Management 
+
+            -> Collects Alerts from External Monitoring Tools(Nagios, Prometheus, Cloudwatch etc)
+            and correlates them into actionable alerts.
+
+    
+    -> ITSM vs ITOM   
+
+        
+
+
+
+
