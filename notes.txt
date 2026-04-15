@@ -109,9 +109,124 @@ class - 1
             -> Collects Alerts from External Monitoring Tools(Nagios, Prometheus, Cloudwatch etc)
             and correlates them into actionable alerts.
 
-    
-    -> ITSM vs ITOM   
 
+
+class - 2
+=========
+
+    -> CMDB (Configuration Management Database)
+
+        -> A configuration management database (CMDB) is a centralized file that 
+        functions as a comprehensive data warehouse, organizing information about an IT environment. 
+        CMDB clarifies the relationships between hardware, software components, 
+        and networks for improved configuration management.
+
+        -> https://www.servicenow.com/in/products/it-operations-management/what-is-cmdb.html
+
+        -> "CMDB" is Heart Of Service Now ITOM 
+
+        -> CMDB is ServiceNow's Master Inventory of everything in your IT environment
+
+            -> Every Server, Application, Database, Network, IP Address, Cloud Server, Business Service 
+            all of these lives as records 
+
+    
+    -> Configuration Items (CI)
+
+        -> Configuration Items are "atoms of CMB"
+
+        -> A Configuration Item (CI) in ServiceNow is a digital record within the 
+        Configuration Management Database (CMDB) representing "any manageable IT component", 
+        such as servers, applications, services, or network devices.
+
+        -> CI's Track Infrastructure Details (Manufacturer, Vendor, Locations) 
+        to support (ITIL Process)
+
+        -> ITIL
+
+            -> Information Technology "Infrastructure Library"
+
+            -> ITIL processes are structured sets of activities within the ITIL framework that guide 
+            IT service management (ITSM) to align IT with business needs. 
+            They cover the full service lifecycle, including planning, delivery, operation, and improvement. 
+
+            -> NO ITIL 
+
+                -> Incidents -> Handled Randomly
+                -> Changes -> Done Without Approvals 
+                -> Tracking -> No Proper Tracking leading to chaos 
+
+            -> ITIL 
+
+                -> Structured Approach 
+                -> Standard Process
+                -> Better Control 
+
+    -> Common ITIL processes 
+
+        1. Incident Management                  ->      Incident Module 
+        Handles issues / failures
+        Example: Server / Laptop Crashed
+
+        2. Change Management                    ->      Change Module 
+        Controls changes in system
+        Example: Deploying new version
+        Ensures no risk or downtime
+
+        3. Problem Management                   ->      Problem Module
+        Finds root cause of repeated issues
+
+        4. Asset Management                     ->      ITAM Module 
+        Tracks IT assets
+        Example: Laptops, servers
+
+        5. Configuration Management             ->      CMDB 
+        Tracks CIs (Configuration Items) in CMDB
+
+    
+        -> ITIL: Rules For Driving 
+
+        -> Service Now: Car 
+
+
+        -> Every Configuration Item (CI) has three things 
+
+            -> Class (What Type Of Thing it is)
+
+            -> Attributes (Properties) 
+
+            -> Relationships (How it connects to other CI's)
+
+        
+        -> NO CMDB 
+
+            -> https://www.lansweeper.com/wp-content/uploads/2019/06/All-servers-by-type.png
+
+        -> With CMDB (CI's)
+
+            -> https://servicenowguru.com/wp-content/uploads/2024/05/bsmMap.jpg
+
+    
+    -> Relationships 
+
+        -> A Relationship in servicenow CMDB is a connection between 
+        Multiple Configuration Items(CI's) that defines 
+
+            -> How They Interact with others
+            -> How They Depend on each other 
+
+                -> Runs On 
+                -> Used By 
+                -> Depends On 
+                -> etc 
+
+            -> "Runs on" (an application runs on a server),  
+            -> "Depends on" (a service depends on an application), 
+            -> "Connected by" (a server connected by a switch) etc 
+
+
+        -> NOTE: The relationships are automatically discovered using Discovery Process 
+        and all the relationships can be automatically loaded into the system through Discovery Process
         
 
 
