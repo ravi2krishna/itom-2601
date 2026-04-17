@@ -229,6 +229,113 @@ class - 2
         and all the relationships can be automatically loaded into the system through Discovery Process
         
 
+class - 3
+=========
+
+    -> CMDB (You can think it as a City Map)
+
+    -> CI's (Buildings With The City - Address, Color (Class Types))
+
+    -> Relationships (Roads Connecting Buildings)
+
+    -> Discovery (Keeps Map Updated)
+
+    -> Event Management (Monitors - Buildings on file sends an SOS to fire department)
+
+    -> Service Mapping (Draws routes between districts (services))
+
+
+    -> NOTE: Lab with Manual creation of CI's and establishing relationship shows, 
+    we cannot add 1000's of servers and applications and establish relationships.
+    To overcome this we have Discovery.
+
+
+    -> Discovery
+
+        -> MID Server 
+
+        -> Credentials 
+
+        -> Probes 
+
+        -> Sensors 
+
+        -> Patterns 
+
+        -> Discovery Schedules 
+
+
+    -> ServiceNow Discovery is an "automated process" that continuously scans 
+    and identifies all the components within IT infrastructure and relationships,
+    there by writing all these into CMDB.
+
+        -> NOTE: Discovery plays crucial role for maintaining accurate and up to date 
+        information in CMDB 
+
+    -> NOTE: Discovery is not available out of the box 
+
+    -> Install Discovery Plugin(com.snc.discovery) and Enable To use
+    Discovery capabilities on your PDI 
+
+        -> https://www.servicenow.com/docs/r/it-operations-management/discovery/t_ActivateTheDiscoveryPlugin.html
+
+
+    
+    
+    -> MID Server 
+
+        -> M: Management
+        -> I: Instrumentation
+        -> D: Discovery
+
+        -> Management: MID Server Manages "communication" between "Service Now Instance" and
+        "Your IT Infrastructure"
+
+            -> Service Now Instance is running outside your infrastructure (Cloud)
+
+        -> Instrumentation: Read Pulse of Every Device in your infrastructure network
+
+            -> Like a doctors Instrument checking vitals 
+
+            -> MID Server Probes servers, databases, os, network devices 
+
+            -> Collects Data like OS Type, IP, Installed softwares, Running processes etc 
+
+
+        -> Discovery: I find things nobody Manually told servicenow about 
+
+            -> MID Server Scans IP Ranges and finds devices automatically 
+
+            -> No Human Intervention Required 
+
+        -> Requirements for MID Server 
+
+            -> MID Server is Java Application 
+
+            -> Install Java Version 11 and above (Win / Linux)
+
+            -> Corporate Network, Physical Machine or Cloud VM 
+
+    
+        -> NOTE: Real world production environments
+        https://media.licdn.com/dms/image/v2/D4D12AQFI8sqvP4xFFQ/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1700537758681?e=2147483647&v=beta&t=zE97TFGw5FQJEjUksqx7SohNsqqV57-IYQ_pj7K2M2U
+
+        
+        -> MID Server process stores its configuration in "agent/config.xml" 
+
+        -> MID Server appears as a record in "ecc_agent" table showing status as up/down
+        and validation state  
+
+
+
+
+
+
+
+
+
+
+        
 
 
 
