@@ -327,6 +327,136 @@ class - 3
         and validation state  
 
 
+class - 4
+=========
+
+    -> Credentials 
+
+        -> Once the MID Server reaches your device on the network, it needs to
+        log into the servers to interrogate it, that's what Credentials are.
+
+        -> Credentials are authentication secrets stored securely in service now 
+        that the MID Server uses to access devices. 
+
+        -> Credentials are stored in "discovery_credentials" table 
+
+        -> Credentials are never sent in plain text, they are "encrypted" 
+        using service now encryption.
+
+        -> MID Server receives encrypted Credentials and decrypts it locally at
+        the moment of use 
+
+        -> There are several types of Credentials 
+
+            -> SSH Credentials used in Linux & Unix environments
+            SSH Credentials are made up of: Username, Public Key & Private Key.
+            Password less authentication(way secure then Password based) uses
+            Public Key & Private Key for accessing Linux servers.
+
+            -> Widows Credentials uses Username & Password 
+
+            -> JDBC Credentials (Database Connectivity)
+
+            -> VM Ware (VM Ware Credentials)
+
+            -> Cloud Infrastructure Like AWS, AZURE & GCP, uses API Keys or Tokens  
+
+
+
+    -> Probes & Sensors 
+
+        -> Probes & Sensors are two halves of same job 
+
+    -> Probes 
+
+        -> A Probe is a Question
+
+            -> It's Script / Command that MID Server executes against target device 
+            to collect RAW Data 
+
+            -> It runs on MID Server Side, reaches to target device and brings 
+            back all the raw output like commands, XML, JSON, WMI Queries etc 
+
+            -> The raw output will be stored at service now side inside 
+            ECC(External Communication Channel) Queue.
+
+
+    -> Sensors 
+
+        -> A Sensor is an Answer 
+
+            -> It's Script(javascript) that takes raw output from Probe 
+            and parses it, extracting fields like OS, IP, Hostname, Port etc 
+            and mapping them to CI Attributes, updating as records in CMDB.
+
+
+    -> Detective Story 
+
+        -> Detective Assistant / Probe 
+
+            -> Goes to the crime scene, takes photos, lifts fingerprints etc
+            collected all raw evidence 
+
+            -> ITOM: Probe runs scripts, collects data 
+
+        -> Bag Of evidence / ECC Queues 
+            
+            -> Bag Of evidence contains full od unprocessed raw evidence items 
+
+            -> ITOM: RAW Data collected i.e unprocessed data 
+
+        -> Detective / Sensor 
+
+            -> Detective sits at desk, opens the Bag Of evidence, 
+            examines each item, extracts meaning of those items 
+            and writes final case report 
+
+            -> ITOM: Extracts Data from ECC Queue and gives meaning fields
+            like Hostname, OS, IP etc 
+
+
+            ServiceNow says → "Go discover this IP"
+                    ↓
+            MID Server sends PROBE → runs commands/scripts on target device
+                    ↓
+            Raw data drops into ECC QUEUE (ecc_queue table)
+                    ↓
+            SENSOR picks it up → reads, parses, extracts
+                    ↓
+            CMDB gets updated with new/updated CI records
+
+
+    -> Patterns 
+
+        -> Patterns are servicenow's modern replacement for older probes/sensors 
+        approach for application and software services discovert 
+
+        -> Probes & Sensor are still heavily used for infrastructure (Hardware/OS/NW)
+
+        -> NOTE: Patterns are preferred method for discovering Application and Services
+
+        -> A Pattern is a Declarative Definition, unlike Imperative Definition of
+        Probes & Sensors 
+
+        -> Patterns discover Specific Type of software or service
+
+            -> Defines: What to look for, which command to run, what files to read,
+            how to map the results to CI Attributes 
+
+            -> Imperative Definition means "How to do"
+
+            -> Declarative Definition means "What to do"
+
+        -> Pattern are written in Visual Designer in servicenow(Pattern Designer)
+        rather than raw javascript
+
+        
+
+
+
+
+
+
 
 
 
