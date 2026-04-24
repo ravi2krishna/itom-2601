@@ -451,21 +451,220 @@ class - 4
         rather than raw javascript
 
         
+class - 5
+=========
+
+    -> Discovery Schedules 
+
+        -> A Discovery Schedule is configuration record that defines a discovery run.
+
+        -> It Answers: 
+        
+            -> What Should be scanned 
+
+            -> When Should it scan 
+
+            -> Which MID Server Should do it 
+
+        -> Key Fields Of Discovery Schedule 
+
+            -> IP Range To Scan 
+
+            -> Schedule: Daily, Weekly, On-demand(your choice) 
+
+            -> MID Server (Name/IP)
+
+        -> NOTE: When Schedule completes, it creates "Discovery Status" record 
+
+        -> Discovery Log within each status record is your "Debugging Tool"
+
+            -> Shows which ip was tried, what probe/pattern was executed, 
+            what CI was created etc 
+
+    
+    
+    -> CI Classification 
+
+        -> CI Classification is the final step, the "Classifier Engine" or "Decision Engine"
+        determines What CI Class to create and Whether To Create a new CI or Update an existing Once
+
+        -> When a Sensor or Pattern finished parsing data from device, it hands over 
+        raw Attributes to CI Classifier Engine
+
+        -> The Classifier's job is to look at those Attributes and Answer two questions 
+
+            -> What Type Of CI is this ?
+
+            -> Does it already exist in CMDB ?
+
+        -> NOTE: Classifier Engine == Identification Rules 
+
+        -> Identification / Reconciliation 
+
+            -> Identification rules for matching Configuration Items before insert/update
+
+    
+    -> IRE (Identification and Reconciliation Engine )
+
+        -> Identification and Reconciliation Engine is underlying servicenow Engine
+        that uses Identifier Rules 
+
+            -> Each Class has a defined set of "Identifier Fields"  that together makes
+            a CI Unique 
+
+            -> "Criterion Attributes" are like Unique fingerprints of a CI 
+
+                -> For a web server like Apache, the combination of 
+                sys_class_name + config_file + version  is the identifier 
+
+                -> For a Docker Container, the container_id  is the identifier 
+
+                -> For Java Server like Tomcat, the combination of 
+                sys_class_name + install_directory + running process
+
+        -> NOTE: If IRE finds a match, it updates the existing CI this is called 
+        Reconciliation. If no match is found, creates a new CI.
+
+        -> IRE - Questions it always asks  ?
+
+            -> Question 1: What are you ?
+
+                -> Linux Server / Windows Linux / Apache Web Server / Container / Tomcat Server ??
+
+            -> Question 2: Have i seen you BEFORE ? 
+
+                -> Does this CI already exist in CMDB 
+
+                        YES -> UPDATE existing CI 
+
+                        NO -> CREATE new CI 
+
+        -> Complete Flow (***)
+
+            -> Discovery Scan To CMDB Update 
+
+            -> Discovery Scans Server 
+
+                -> Patterns / Sensors collects RAW Attributes
+                    (config_file + version)
+
+                -> IRE receives the payload 
+
+                -> Question 1: What TYPE of CI ?
+
+                    -> Looks at CI Identifiers list 
+                    -> Matches "Apache" rules
+                    -> Class = cmdb_ci_apache_web_server
+                
+                -> Question 1: Does it exist ?
+
+                    -> Sues Criterion Attributes 
+
+                    -> Searches cmdb_ci_apache_web_server
+
+                    Found ? -> Update Existing CI 
+
+                    Not Found ? -> Create New CI 
+
+            -> CMDB is Updated
 
 
+    
+    -> LAB To Simulate IRE Working and its Behavior 
+
+        -> Create TWO Computers with same Serial Number and Tags 
+
+        -> This leads to CMDB Duplicate Problem 
+
+            -> In real world scenario, this happens when someone manually ass a CI 
+            that Discovery already found, now we have duplicates polluting your CMDB
+
+        -> NOTE: Use Identification Simulation Under Configuration of Service Now Navigator 
+
+        -> Identification Simulation
+        
+            -> Select the data source and class. Fill out the form and
+            click Generate Script to construct and inspect the payload. 
+            Click Run Simulation to simulate a run of the payload 
+            through the Identification Engine.
+
+        -> When we did Simulation, we got
+
+            -> "attemptResult": "MATCHED"
+            -> "operation": "UPDATE"
+
+        -> IRE received 
+
+            -> I found a computer with Serial Number SN-RAVI-2026 
+
+        -> IRE Searched CMDB 
+
+            -> Do i know this Serial Number ?
+
+        -> IFE Found: Yes - laptop-ravi-01 has this serial 
+
+        -> IRE Decided: Update laptop-ravi-01, DON'T create new record
+
+        -> RESULT: MATCHED + UPDATE 
+
+        -> NOTE: With above simulation, we can conclude IRE is doing UPDATE if Duplicate is found 
 
 
+        -> LAB: Next Simulation, What if we add a Unique item, will it CREATE / UPDATE 
+
+            -> Create a new computer with complete Unique information 
 
 
+            -> When we did Simulation, we got
 
-
-
-
-
-
-
+                -> "attemptResult": "NO_MATCH"
+                -> "operation": "INSERT"
 
         
+        -> 1st scenario - Duplicate - SN-RAVI-2026  --> IRE Found (MATCHED)    --> Operation (UPDATE)
 
+        -> 2nd scenario - Brand NEw - SN-BRAND-NEW  --> IRE Found (NO_MATCH)    --> Operation (INSERT)
+
+
+        -> NOTE: This is exactly how discovery works ever single discovery we start.
+        Every device goes through IRE check
+
+            -> Known Devices gets UPDATED
+
+            -> New Devices gets CREATED
+
+            -> With is approach CMDB always stays ACCURATE 
+
+
+    
+    -> Master LAB environment
+
+        -> Infrastructure 
+
+            -> Cloud Infrastructure / VM Ware 
+
+            -> Access To Infrastructure is MUST for following LAB 
+
+            -> At least Allocate 2 CPU's for your MID Server 
+
+            -> RAM: 4 GB / 8 GB (recommended)
+
+            -> HDD: Minimum 50 GB HDD Space should be available in your Drive(C Drive)
+
+        -> Software 
+
+            -> System Software: OS (Windows)
+
+            -> Install Java Version 21 (LTS)
+
+            -> Open Command Prompt 
+
+                -> java -version
+
+        -> Service Now PDI 
+
+            -> Create a service account for Mid Sever 
+
+                -> NOTE: Mid server needs a dedicated user, Never use admin user 
 
 
