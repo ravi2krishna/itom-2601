@@ -668,3 +668,118 @@ class - 5
                 -> NOTE: Mid server needs a dedicated user, Never use admin user 
 
 
+
+class - 6
+=========
+
+    -> Infrastructure 
+
+        -> Setup AWS Server(EC2 Instance)  
+            
+            -> 100 GB Disk 
+            -> 2 CPU's 
+            -> 8 GB RAM 
+
+        -> Login To AWS 
+
+            -> https://aws.amazon.com/console/
+
+            -> Select Sign In Using Root User Email
+
+        -> Amazon Elastic Compute Cloud (EC2) is a foundational AWS service providing secure, 
+        resizable virtual servers—known as instances—in the cloud. 
+        It enables users to rent computing power, memory, and storage on-demand.
+
+        -> Steps To Create Server 
+
+            -> Name: mid-server-agent
+            -> Amazon Machine Image (OS): Select Windows (2025 Base Edition)
+            -> Instance type(Size RAM & CPU): Select the one which has 2 vCPU & 8 GB Memory (t3.large)
+            -> Key pair (Authentication): Create new key pair -> key(itom.pem) will be downloaded -> Ensure To Save it (upload in your email)
+            -> Network settings: Select the default firewall i.e security groups with Allowing RDP Rule 
+            -> Configure storage: Change to 100 GB 
+
+            -> NOTE: Status checks turn to green, indicating server successfully created 
+
+        -> Steps To Login To Server
+
+            -> We need to have a Static IP for our LABS moving forward 
+
+                -> Static IP == Elastic IP in AWS 
+
+                -> In Left Pane -> Network & Security -> Elastic IP's 
+
+                -> Allocate Elastic IP address 
+
+                -> Check IP -> Actions -> Associate Elastic IP address -> Instance (Select mid-server-agent)
+
+            
+            -> Select mid-server-agent -> Connect -> Go to Tab RDP Client -> Download Remote Desktop file -> 
+                -> Username: Administrator & Password: Click Get Password -> Upload Private Key File (itom.pem) 
+                    -> Copy and update password in RDP -> Continue -> Continue
+
+    
+    -> Software
+
+        -> System Software: OS (Windows) is ready out of the box 
+
+
+        -> Install Java Version 21 (LTS)
+
+            -> Verify Java is installed using Command Prompt
+
+                -> java -version 
+
+                    -> 'java' is not recognized as an internal or external command, not installed
+
+            -> https://www.oracle.com/java/technologies/downloads/
+
+            -> Based on OS download and install Java 21 
+
+            -> NOTE: Close and re-open Command Prompt   
+
+                -> java -version 
+                -> java version "21.0.11" 2026-04-21 LTS
+
+    
+    -> Networking On Local Machine 
+
+        -> We need local(intranet) ip, this will be the Discovery Scan Target 
+
+        -> Windows 
+
+            -> In Command Prompt
+
+                -> ipconfig 
+
+        -> MacOS / Linux 
+
+            -> In Terminal
+
+                -> ip addr show 
+                -> ifconfig 
+
+        -> NOTE: IPv4 Address. . . . . . . . . . . : 172.31.22.233
+
+
+
+    -> Service Now PDI 
+
+        -> Create a service account for Mid Sever 
+
+                -> NOTE: Mid server needs a dedicated user, Never use admin user 
+
+                -> )NaUM1uIRbbO6yhQO}pG$j{>(SU%6<zQ4+Sc#6uM#r87mfD*pgt94RrTH7?x?<Ze[m={-#6y,><@2tbH
+
+                -> Assign Mid Server User Roles i.e Permission 
+
+                    -> No Roles By default i.e No Permissions 
+
+                    -> Add mid_server role to Mid Server User
+
+
+    -> Install Mid Server 
+
+        -> Check Mid Servers in Navigator 
+
+            -> No Mid Servers by default
