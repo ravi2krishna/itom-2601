@@ -783,3 +783,52 @@ class - 6
         -> Check Mid Servers in Navigator 
 
             -> No Mid Servers by default
+
+    
+class - 7
+=========
+
+    -> Once Mid Server is Installed 
+
+        -> Do the validation on Mid Server 
+
+    
+    -> NOTE: By default we have no Discovery Features, Install the Plugin 
+
+    -> Once Plugin is installed successfully, check for Discovery options in Application Navigator
+
+    -> Credentials
+
+        -> Once the MID Server reaches your device on the network, it needs to
+        log into the servers to interrogate it, that's what Credentials are.
+
+            -> Discovery > Credentials 
+
+    -> We Saw this on Live Server Now 
+
+            ServiceNow says → "Go discover this IP"
+                    ↓
+            MID Server sends PROBE → runs commands/scripts on target device
+                    ↓
+            Raw data drops into ECC QUEUE (ecc_queue table)
+                    ↓
+            SENSOR picks it up → reads, parses, extracts
+                    ↓
+            CMDB gets updated with new/updated CI records
+
+    
+    -> Let's start Discovery On Our Machine  
+
+        -> Before Discovery Check ECC Queue
+
+            -> https://dev182457.service-now.com/ecc_queue_list.do
+
+        -> Start Discovery 
+
+            -> ServiceNow Discovery is an "automated process" that continuously scans 
+            and identifies all the components within IT infrastructure and relationships,
+            there by writing all these into CMDB.
+
+            -> Wait Till the Status is completed 
+
+            
