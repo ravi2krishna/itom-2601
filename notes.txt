@@ -877,4 +877,166 @@ class - 8
             -> ssh -i itom.pem ubuntu@172.31.17.25 
 
     
+class - 9
+=========
+
+    -> Service Mapping 
+
+        -> Service mapping is used to discover and track IT applications and components 
+        in an organization, outlining how each connects to business services.
+
+        -> Service mapping charts a company’s interconnected IT environment. 
+        This allows organizations to build a service-aware view of 
+        how their underlying IT applications and related components connect to business services.
+
+        -> https://media.licdn.com/dms/image/v2/D5612AQFTabVd6lwPNw/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1675397958842?e=2147483647&v=beta&t=yN3OPRI6JCxvBOLTsW72W3ZQpjN1uDWIztrEgpI-FrU
+
+        -> NOTE: Service mapping is a way of more clearly understanding "application services". 
+
+    -> Application Service 
+
+        -> One example of an application service is financial reporting. 
+        When an organization needs to generate a financial report, 
+        they employ an application service that includes computer hardware, web server, 
+        application server, databases, middleware, and network infrastructure components. 
+        Each of these works together to provide the service of creating the desired financial report.
+
+        -> Traditionally, IT departments have relied on horizontal discovery to 
+        map IT infrastructures. 
+
+        -> Traditionally, IT departments have relied on horizontal discovery to map IT infrastructures.
+        This delivery method creates inventories that act as though 
+        every application and device is standalone, without making note of the 
+        connections between devices and application services. 
+        
+        -> Service mapping forgoes this outdated approach, 
+        relying instead on top-down mapping that focuses on the 
+        connections between devices and applications so that 
+        any issues or changes can be immediately identified along with their impact 
+        on the rest of the application service.
+
+        -> https://www.servicenow.com/docs/r/zurich/it-operations-management/service-mapping/service-mapping-get-started.html
+
+        -> https://www.servicenow.com/docs/api/khub/maps/guxhDnVk8OUAJKLm7WZsYA/resources/9uEv1ID3zPqCzqimr6wCPw-guxhDnVk8OUAJKLm7WZsYA/content?v=653a9edca34cf51b&Ft-Calling-App=ft/turnkey-portal
+
+
+    -> NOTE: Discovery sees "What Exists" 
+
+    -> NOTE: Service Mapping sees "How Things Talk To Each Other"
+
+    
+    -> Before Starting With Service Mapping 
+
+        -> Make Sure MID Server is Running 
+        -> Discovery Plugin Installed 
+        -> Service Mapping Plugin and Others Installed 
+
+    
+    -> Discovery To Service Mapping 
+
+        -> 1st Phase - Horizontal Discovery 
+
+            -> Linux Server 
+
+                -> Linux Server CI in CMDB 
+
+        
+        -> 2nd Phase - Vertical Discovery 
+
+            -> On Top Of Linux Server Will Setup Web Server 
+
+                -> Installed Apache Web Server 
+
+                -> MID Server Runs Apache Pattern 
+
+            
+            -> WEB SERVER - A web server is computer software [ APACHE HTTP Server ] 
+            and underlying hardware  [ AWS EC2 ] that accepts requests via HTTP/S 
+            to distribute web content.
+
+            -> The hardware runs 24/7 in data centers, while software processes 
+            client browser requests, returning HTML, images, or videos.
+
+            -> https://media.geeksforgeeks.org/wp-content/uploads/20190927155217/webserver.png
+
+            -> Apache Web Server Runs On Port 80 
+
+                -> sudo ss -ntpl 
+
+                -> NOTE: Browse IP Of Web Server - This site can’t be reached
+
+                -> NOTE: Confirms Web Server is not running, as no port 80 is detected
+
+                -> Steps To Install Apache Web Server 
+
+                    -> sudo apt update -y 
+
+                    -> sudo apt install apache2 -y 
+
+                    -> sudo ss -ntpl 
+
+                -> NOTE: Confirms Web Server is running, as port 80 is detected
+
+                -> NOTE: Browse IP Of Web Server - This site can be reached
+
+
+        -> Phase 1: 
+
+            -> Unix Classify 
+            -> CI - Linux Server 
+
+        -> Phase 2: 
+
+            -> Pattern Launcher  
+            -> Looked for Apache PAttern 
+            -> Apache Web Server CI Created  
+
+        
+        -> 3rd Phase - Service Mapping 
+
+            -> Setup Ecommerce Business Service 
+
+                -> NOTE: You should replace this file (located at /var/www/html/index.html) 
+                before continuing to operate your HTTP server.
+
+                -> Application Code - https://github.com/ravi2krishna/ecomm.git
+
+                -> sudo git clone <url> <destination 
+
+                -> sudo git clone https://github.com/ravi2krishna/ecomm.git /var/www/html/
+
+                    -> fatal: destination path '/var/www/html' already exists and is not an empty directory.
+
+                -> Clean Up (Emptying Directory)
+
+                    -> sudo rm -r /var/www/html/*
+
+                -> sudo git clone https://github.com/ravi2krishna/ecomm.git /var/www/html/
+
+
+                -> NOTE: Browse IP Of Web Server - Ecommerce site can be reached
+
+
+            -> Service Mapping = Top Down 
+
+                -> Start From Business Service 
+
+
+            -> Top Down Approach 
+
+                -> Business Service (Ecommerce Service)
+
+                        |
+
+                    Apache Web Server 
+
+                        | 
+
+                    Installed On Linux Server 
+
+            
+            -> NOTE: Full Dependency Map Visibility 
+
+
+
 
