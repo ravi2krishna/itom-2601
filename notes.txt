@@ -1038,5 +1038,75 @@ class - 9
             -> NOTE: Full Dependency Map Visibility 
 
 
+class - 10
+==========
 
+    -> Horizontal Discovery i.e Bottom Up 
+
+        -> Scan IP's -> Find Servers -> Find Apps 
+
+    -> Service Mapping i.e Top Down 
+
+        -> Starts From Business Service (Ecommerce Business)
+
+            -> Asks: What does this service NEED to work ? 
+
+                -> Maps everything it depends on 
+    
+    -> NOTE: Service Mapping is not available out of box 
+
+    -> Install Service Mapping Plugin 
+
+    -> NOTE: In real world applications we use Domain Names not IP Address 
+    for accessing Applications 
+
+    -> NOTE: In AWS environment we need to buy a domain from Route53 Service 
+
+    -> NOTE: In AZURE environment we don't need to buy a domain, 
+    we can get a free domain but it will be in format
+    your_service_name.westus2.cloudapp.azure.com
+
+    -> NOTE: We are also simulating another real world use case of cross clouds i.e 
+    Mid Server is on AWS Platform
+    Business Server(Ecommerce App Server) is on AZURE Platform
+
+    -> NOTE: In AWS We have EC2 for Server Management
+
+    -> NOTE: In AZURE We have Azure VM for Server Management
+
+    -> NOTE: Domain of our server 
+        
+        -> snowecommerce.westus2.cloudapp.azure.com
+
+    -> To Attach Domain To Apache Web Server 
+
+        -> sudo cat /etc/apache2/sites-enabled/000-default.conf
+
+            -> ServerName snowecommerce.westus2.cloudapp.azure.com
+        
+        -> To Test Locally 
+
+            -> curl snowecommerce.westus2.cloudapp.azure.com
+
+        -> To Test From Internet 
+
+            -> Browse domain snowecommerce.westus2.cloudapp.azure.com
+        
+        -> Enable HTTPS Using Certbot Service 
+
+            -> https://snowecommerce.westus2.cloudapp.azure.com
+
+        
+        -> End Point 
+
+            -> https://snowecommerce.westus2.cloudapp.azure.com
+
+                -> IP Address: 20.3.232.237
+
+                    -> Apache Web Server with port 80/443 -> fot HTTPS 
+
+                        -> Azure Virtual Machine 
+
+
+    
 
