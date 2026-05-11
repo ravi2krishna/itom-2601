@@ -1263,5 +1263,365 @@ class - 11
 
 
 
+class - 12
+==========
+
+    -> Prometheus
+
+        -> Prometheus is a Monitoring Tool 
+
+        -> It continuously checks for 
+
+            -> Server CPU 
+            -> Server Memory(RAM) 
+            -> Server DISK 
+            -> Server Application(Web Server)
+            -> etc 
+        and stores metrics 
+
+        -> Prometheus collects metrics 
+
+            -> Server CPU - 95%
+            -> Server Memory(RAM) - 90%
+            -> Server DISK - 75% 
+
+            -> These are only measurements, NOT Incidents yet 
+
+    
+    -> Alert Manager 
+
+        -> Alert Manager is like Decision maker for alerts 
+
+        -> Prometheus itself mainly collects metrics 
+
+        -> Alert Manager Decides 
+
+            -> Is this dangerous ?
+            -> Should Alert be created ?
+            -> Who Should receive it ?
+            -> Email ?
+            -> Slack ?
+            -> Teams ?
+            -> ServiceNow ? (***)
 
 
+        -> Prometheus see CPU = 95% 
+
+        -> Rule Says 
+
+            If CPU > 90% then Trigger Alert 
+
+        -> Now Alert Manager receives
+
+            ALERT: HIGH CPU 
+            Server: Linux-01-Server
+            Severity: Critical 
+
+    
+    -> ServiceNow Event Management 
+
+        -> It's an Central Control Room for infrastructure events 
+
+        -> It receives events from 
+
+            -> Prometheus
+            -> Zabbix
+            -> Nagios 
+            -> etc 
+
+    -> NOTE: EVENT != ALERT != INCIDENT 
+
+        -> Event is raw message from monitoring tools 
+
+            -> CPU usage is 95% (this is just information)
+
+        -> ALert 
+
+            -> Important actionable issue detected 
+
+            -> Critical CPU Usage On Linux-01-Server (Now action is needed)
+
+        -> Incident
+
+            -> Ticket assigned on Linux-01-Server
+
+            -> INC0000023 Created for Linux Server 
+
+    
+    -> NOTE:
+
+        -> Prometheus Collects metrics
+
+            -> Alert Rule Triggered 
+
+                -> Alert Manager receives Alert 
+
+                    -> ServiceNow receives Event(Webhooks)
+
+                        -> ServiceNow Event Management (Creates Alert)
+
+                            -> Incident Auto Created (if critical - apache server going down)
+
+
+    
+    -> Patient Heart Beat Monitor               -       Prometheus
+
+    -> Nurse Receiving emergency alarm          -       Alert Manager
+
+    -> Hospital Control Room                    -       ServiceNow Event Management
+
+    -> Doctor ticket / work order               -       Incident 
+
+
+    
+    -> Ecommerce Service Flow (Event Management)
+
+        -> Web Server Apache 
+                |
+            Prometheus
+                |
+            Alert Rule
+                |
+            Alert Manager
+                |
+            Webhooks/API
+                |    
+            ServiceNow Event
+                |
+            ServiceNow Alert 
+                |
+            Incident Created 
+
+    
+    -> NOTE: To have above flow implemented, Install Prometheus & Alert Manager 
+
+    -> Install Prometheus 
+
+        -> sudo apt update
+
+        -> Create User for prometheus 
+
+            -> id prometheus
+
+            -> sudo useradd --no-create-home --shell /bin/false prometheus
+
+            -> id prometheus
+
+        -> Create Directories 
+
+            -> sudo mkdir /etc/prometheus
+            -> sudo mkdir /var/lib/prometheus
+
+        -> Download prometheus
+
+            -> cd /tmp 
+            -> ls 
+            -> wget 
+            -> wget https://github.com/prometheus/prometheus/releases/download/v2.45.0/prometheus-2.45.0.linux-amd64.tar.gz
+            -> ls 
+                prometheus-2.45.0.linux-amd64.tar.gz
+        
+        -> Extract 
+            -> ls 
+            -> tar xvf prometheus-2.45.0.linux-amd64.tar.gz
+            -> ls 
+            -> cd prometheus-2.45.0.linux-amd64
+            -> ls 
+
+        -> Configure Prometheus
+
+            -> Copy Binaries 
+
+                -> sudo cp prometheus /usr/local/bin
+                -> sudo cp promtool /usr/local/bin
+
+            -> Copy Config files 
+
+                -> sudo cp -r consoles /etc/prometheus
+                -> sudo cp -r console_libraries /etc/prometheus
+
+            -> Set Ownership, as all the files were set to root user of now 
+
+                -> ls -l /etc/prometheus
+
+                    root root 4096 May 11 03:36 console_libraries
+                    root root 4096 May 11 03:36 consoles
+
+                -> id prometheus
+
+                -> sudo chown -R prometheus:prometheus /etc/prometheus
+                -> ls -l /etc/prometheus
+                    prometheus prometheus 4096 May 11 03:36 console_libraries
+                -> sudo chown -R prometheus:prometheus /var/lib/prometheus
+                -> sudo chown -R prometheus:prometheus /usr/local/bin/prometheus
+                -> sudo chown -R prometheus:prometheus /usr/local/bin/promtool
+
+        -> Create Prometheus Config File 
+
+            -> sudo vi /etc/prometheus/prometheus.yml
+
+            global:
+            scrape_interval: 15s
+            evaluation_interval: 15s
+
+            alerting:
+            alertmanagers:
+                - static_configs:
+                    - targets: ['localhost:9093']
+
+            rule_files:
+            - "/etc/prometheus/alert_rules.yml"
+
+            scrape_configs:
+            - job_name: 'prometheus'
+                static_configs:
+                - targets: ['localhost:9090']
+
+            - job_name: 'apache'
+                static_configs:
+                - targets: ['localhost:9117']
+
+
+            -> scrape_interval: 15s # Collect metrics every 15 seconds 
+            -> evaluation_interval: 15s # Evaluate alerts rules every 15 seconds 
+
+
+            -> alertmanagers - targets: ['localhost:9093']
+
+                -> If alerts happen, send them to alert manager
+                -> localhost - Same server 
+                -> 9093 - Alert manager port 
+
+                -> hey alert manager if i detect problems, i'll notify you here 
+
+            -> rule_files: "/etc/prometheus/alert_rules.yml"
+
+                -> Alert conditions are going to be written in this file 
+
+            -> scrape_configs: what systems should prometheus monitor ?
+
+                -> - job_name: 'prometheus' (Prometheus is monitoring itself)
+                    -> port 9090 is Prometheus default port 
+
+                -> - apache: Prometheus should monitor apache metrics 
+                    -> port 9117 ?
+
+                    -> Apache runs on port 80 / 443 
+
+                    -> Why 9117 ?
+
+                        -> Prometheus cannot directly understand apache 
+
+                            -> So we need to install Apache Exporter 
+
+                                -> Exporter converts apache data into Prometheus readable metrics 
+
+                                    Apache Server
+                                        |
+                                    Apache Exporter (9117)
+                                        |
+                                    Prometheus Collects metrics
+                
+
+
+    -> Create Alert Rules File 
+
+        -> sudo vi /etc/prometheus/alert_rules.yml
+
+            groups:
+            - name: apache_alerts
+                rules:
+                - alert: ApacheDown
+                    expr: apache_up == 0
+                    for: 10s
+                    labels:
+                    severity: critical
+                    annotations:
+                    summary: "Apache is DOWN on {{ $labels.instance }}"
+                    description: "Apache web server is not responding"
+
+                - alert: ApacheHighConnections
+                    expr: apache_accesses_total > 100
+                    for: 1m
+                    labels:
+                    severity: warning
+                    annotations:
+                    summary: "Apache high connections on {{ $labels.instance }}"
+
+
+    -> Above file contains conditions that tell prometheus when to panic and send alerts
+
+        name: apache_alerts
+        alert: ApacheDown (Alert Name)
+        expr: apache_up == 0 (1 means apache Is running & 0 means apache is down)
+        if apache_up becomes 0, then raise alert 
+        severity: critical (alert importance level)
+            -> critical - Very Serious
+            -> warning - Medium Issue 
+            -> info - Just Information
+        annotations: Display Friendly Alert message
+        $labels.instance - Dynamic Server name 
+
+
+
+        alert: ApacheHighConnections (alert for too many connections)
+        expr: apache_accesses_total > 100 (if apache receives more than 100 connections)
+        for: 1m(check for 1 min, avoiding temporary spikes)
+        severity: warning (website is still working - but system might overload soon)
+
+        -> NOTE: Rules file contains
+
+            -> expr         -       What Problem ?
+            -> for          -       How long to wait ?
+            -> severity     -       How serious ?
+            -> summary      -       What message to display ?
+
+
+        -> NOTE: ServiceNow Connection 
+
+            When this alert triggers (ApacheDown)
+
+                ServiceNow ITOM receives Event 
+
+                    Event -> Alert 
+
+                        Alert -> Incident
+
+
+    -> Create Prometheus Service 
+
+        -> sudo vi /etc/systemd/system/prometheus.service
+
+            [Unit]
+            Description=Prometheus
+            Wants=network-online.target
+            After=network-online.target
+
+            [Service]
+            User=prometheus
+            Group=prometheus
+            Type=simple
+            ExecStart=/usr/local/bin/prometheus \
+                --config.file /etc/prometheus/prometheus.yml \
+                --storage.tsdb.path /var/lib/prometheus/ \
+                --web.console.templates=/etc/prometheus/consoles \
+                --web.console.libraries=/etc/prometheus/console_libraries
+
+            [Install]
+            WantedBy=multi-user.target
+
+
+    -> Start Prometheus Tool 
+
+        sudo ss -ntpl
+        sudo systemctl daemon-reload
+        sudo systemctl start prometheus
+        sudo systemctl enable prometheus
+        sudo systemctl status prometheus
+        sudo ss -ntpl
+            9090                  *:*       users:(("prometheus",pid=3362,fd=7))
+
+        -> Browse with port 9090 
+            This site can’t be reached
+        -> add firewall rule with port 9090 
+        -> Browse with port 9090 
