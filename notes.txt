@@ -1625,3 +1625,200 @@ class - 12
             This site can’t be reached
         -> add firewall rule with port 9090 
         -> Browse with port 9090 
+
+
+class - 13
+==========
+
+    -> Setup Apache Exporter 
+
+        -> Apache Exporter is whats lets Prometheus read Apache metrics 
+
+        -> Enable Apache Status Module 
+
+            -> sudo a2enmod status
+            
+            -> sudo vi /etc/apache2/mods-enabled/status.conf
+
+                Add inside <IfModule> block:
+
+                    <Location /server-status>
+                        SetHandler server-status
+                        Require local
+                    </Location>
+                    ExtendedStatus On
+
+        -> Restart Apache Server 
+
+            -> sudo systemctl restart apache2 
+
+        -> Verify The Status Page Works 
+
+            -> curl http://localhost/server-status
+
+
+    -> Install Apache Exporter
+
+        -> cd /tmp
+        -> wget https://github.com/Lusitaniae/apache_exporter/releases/download/v0.13.4/apache_exporter-0.13.4.linux-amd64.tar.gz
+        -> tar xvf apache_exporter-0.13.4.linux-amd64.tar.gz
+        -> sudo cp apache_exporter-0.13.4.linux-amd64/apache_exporter /usr/local/bin/
+
+    -> Create Apache Exporter Service
+
+        -> sudo vi /etc/systemd/system/apache_exporter.service
+
+            [Unit]
+            Description=Apache Exporter
+            Wants=network-online.target
+            After=network-online.target
+
+            [Service]
+            User=prometheus
+            Group=prometheus
+            Type=simple
+            ExecStart=/usr/local/bin/apache_exporter \
+                --scrape_uri=http://localhost/server-status?auto
+
+            [Install]
+            WantedBy=multi-user.target
+
+    
+    -> Start Apache Exporter
+
+        -> sudo systemctl daemon-reload
+        -> sudo systemctl start apache_exporter
+        -> sudo systemctl enable apache_exporter
+        -> sudo systemctl status apache_exporter
+
+    -> Add Port 9117 In Firewall
+
+    -> Browse 
+        
+        -> http://snowecommerce.westus2.cloudapp.azure.com:9117/metrics
+
+        -> curl http://localhost:9117/metrics
+
+        -> curl http://localhost:9117/metrics | grep apache_up
+
+            -> apache_up 1 (indicating apache is up and running)
+
+    
+    -> Install Alert Manager
+
+        -> Alert Manager receives alerts from prometheus and forwards to ServiceNow 
+
+        -> cd /tmp
+        -> wget https://github.com/prometheus/alertmanager/releases/download/v0.26.0/alertmanager-0.26.0.linux-amd64.tar.gz
+        -> tar xvf alertmanager-0.26.0.linux-amd64.tar.gz
+        -> cd alertmanager-0.26.0.linux-amd64
+        -> sudo cp alertmanager /usr/local/bin/
+        -> sudo cp amtool /usr/local/bin/
+        -> sudo mkdir /etc/alertmanager
+
+    -> Configure Alert Manager 
+
+        -> Prometheus ---> Alert Manager ---> ServiceNow
+
+        -> sudo vi /etc/alertmanager/alertmanager.yml
+
+            global:
+            resolve_timeout: 5m
+
+            route:
+            group_by: ['alertname']
+            group_wait: 10s
+            group_interval: 10s
+            repeat_interval: 1h
+            receiver: 'servicenow-webhook'
+
+            receivers:
+            - name: 'servicenow-webhook'
+                webhook_configs:
+                - url: 'http://<YOUR-PDI>.service-now.com/api/global/em/jsonv2'
+                    http_config:
+                    basic_auth:
+                        username: 'admin'
+                        password: '<YOUR-PDI-PASSWORD>'
+                    send_resolved: true
+
+    -> url - ServiceNow URL 
+        -> http://<YOUR-PDI>.service-now.com/api/global/em/jsonv2
+        -> http://<YOUR-PDI>.service-now.com - PDI 
+        -> api/global/em/jsonv2 - Event Management API
+    -> Webhooks - API Calls 
+    -> alertmanager sends JSON payload to servicenow
+
+        {
+            "alertname": "ApacheDown",
+            "severity": "Critical"
+        }
+
+    -> ServiceNow receive above and Creates 
+
+        -> Event 
+        -> Alerts 
+        -> Incident 
+
+    -> basic_auth: Credentials of servicenow 
+
+        -> As of now we have stored in file (not recommended)
+
+        -> Best Practice is to use tools(Vaults, secret managers)
+
+            -> https://www.hashicorp.com/en/products/vault
+
+
+    -> Create alertmanager Service
+
+        -> sudo vi /etc/systemd/system/alertmanager.service
+
+            [Unit]
+            Description=Alertmanager
+            Wants=network-online.target
+            After=network-online.target
+
+            [Service]
+            User=prometheus
+            Group=prometheus
+            Type=simple
+            ExecStart=/usr/local/bin/alertmanager \
+                --config.file=/etc/alertmanager/alertmanager.yml \
+                --storage.path=/var/lib/prometheus/
+
+            [Install]
+            WantedBy=multi-user.target
+
+    -> Start Alertmanager
+
+        -> sudo systemctl daemon-reload
+        -> sudo systemctl start alertmanager
+        -> sudo systemctl enable alertmanager
+        -> sudo systemctl status alertmanager
+
+        -> Add Port 9093 In Firewall
+
+
+    -> http://snowecommerce.westus2.cloudapp.azure.com:9093/
+
+        -> Verify if ApacheHighConnections is visible 
+
+        -> This Confirms integration is successful 
+
+        -> Prometheus ---> Alert Manager ---> ServiceNow
+
+    
+    -> Event Management capabilities are not available out of box in servicenow 
+
+    -> Enable Event Management capabilities by installing Event Management Plugin 
+
+    -> For Reference 
+
+        -> https://www.youtube.com/watch?v=THa9ou5lGDI
+
+    -> Install ITOM AIOps Plugin, which includes multiple dependent plugins like
+    AIOps Experience, ServiceNow Event Connectors,  ServiceNow Core Event Management etc 
+
+    
+
+
