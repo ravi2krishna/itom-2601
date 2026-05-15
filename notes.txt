@@ -1820,5 +1820,29 @@ class - 13
     AIOps Experience, ServiceNow Event Connectors,  ServiceNow Core Event Management etc 
 
     
+class - 14
+==========
+
+    -> Once the ITOM AIOps Plugin is successfully installed 
+
+    -> Configure Metrics - Events - Alerts 
+
+    -> Use this shell script to test manual event Entry
+
+        curl -X POST \
+        'https://dev314768.service-now.com/api/global/em/jsonv2' \
+        -u 'admin:your-password' \
+        -H "Content-Type: application/json" \
+        -d '{
+            "records": [{
+            "source": "Prometheus-Ubuntu",
+            "node": "ip-172-31-39-54",
+            "type": "Apache",
+            "resource": "apache_up",
+            "metric_name": "apache_up",
+            "severity": "2",
+            "description": "Test event from Prometheus"
+            }]
+        }'
 
 
