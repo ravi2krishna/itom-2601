@@ -1846,3 +1846,121 @@ class - 14
         }'
 
 
+class - 15
+==========
+
+    -> NOTE: Alertmanager sends a different JSON Format that what ServiceNow Expects 
+    We need some middleware script to translate 
+
+    -> Fix is create a python webhook bridge 
+
+    -> sudo apt install python3-pip -y
+
+    -> pip3 install flask requests --break-system-packages
+
+    -> Create Bridge Script 
+
+        -> vi /home/ubuntu/webhook_bridge.py
+
+        from flask import Flask, request, jsonify
+import requests
+import json
+
+app = Flask(__name__)
+
+SNOW_URL = "https://dev182457.service-now.com/api/global/em/jsonv2"
+SNOW_USER = "admin"
+SNOW_PASS = "P3*/xvHGnw4C"
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.json
+    print("Received from Alertmanager:", json.dumps(data, indent=2))
+    
+    snow_events = []
+    for alert in data.get('alerts', []):
+        status = alert.get('status', 'firing')
+        severity = "1" if status == "firing" else "0"
+        
+        snow_event = {
+            "source": "Prometheus-Ubuntu",
+            "node": alert.get('annotations', {}).get('node', 
+                   alert.get('labels', {}).get('instance', 
+                   '20.3.232.237')),
+            "type": "Apache",
+            "resource": "apache_up",
+            "metric_name": "apache_up",
+            "severity": severity,
+            "description": alert.get('annotations', {}).get('summary', 
+                          'Apache is DOWN'),
+            "resolution_state": "7" if status == "resolved" else "0"
+        }
+        snow_events.append(snow_event)
+        print("Sending to ServiceNow:", json.dumps(snow_event, indent=2))
+    
+    response = requests.post(
+        SNOW_URL,
+        auth=(SNOW_USER, SNOW_PASS),
+        json={"records": snow_events},
+        headers={"Content-Type": "application/json"}
+    )
+    
+    print("ServiceNow response:", response.text)
+    return jsonify({"status": "sent", "snow_response": response.text})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5001)
+
+
+    -> nohup python3 /home/ubuntu/webhook_bridge.py > /home/ubuntu/bridge.log 2>&1 &
+
+    -> Test the Bridge 
+
+        curl -X POST http://localhost:5001/webhook \
+  -H "Content-Type: application/json" \
+  -d '{"alerts":[{"status":"firing","labels":{"alertname":"ApacheDown","severity":"critical","instance":"localhost:9117"},"annotations":{"summary":"Apache is DOWN","node":"20.3.232.237","description":"Apache web server is not responding"}}]}'
+
+    
+    -> Update Alertmanager To Use Bridge 
+
+        -> sudo vi /etc/alertmanager/alertmanager.yml 
+
+            global:
+            resolve_timeout: 5m
+
+            route:
+            group_by: ['alertname']
+            group_wait: 10s
+            group_interval: 10s
+            repeat_interval: 1h
+            receiver: 'servicenow'
+
+            receivers:
+            - name: 'servicenow'
+                webhook_configs:
+                - url: 'http://localhost:5001/webhook'
+                    send_resolved: true
+
+        
+        -> sudo systemctl restart alertmanager
+
+    
+    -> Verify The Bridge is working or not 
+
+        -> Stop Apache Service 
+
+            -> sudo systemctl stop apache2 
+
+                -> Event Should be created automatically
+
+                    2026-05-17 20:15:10 Prometheus-Ubuntu	Apache is DOWN on localhost:9117	20.3.232.237	Apache	apache_up		Processed	Critical	Alert0010004
+
+                -> Now An Alert Should be created automatically
+
+                    -> Open Respective Alert and Check the Dependency View to get better view 
+
+
+        -> Start Apache Service 
+
+            -> sudo systemctl start apache2            
+
